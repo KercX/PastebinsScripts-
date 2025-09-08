@@ -1,0 +1,297 @@
+-- KRNL-Style Advanced GUI with Tween, Switches, Sliders, and Loadstring
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KRNLExecutorGUI"
+screenGui.Parent = playerGui
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 400, 0, 0)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = mainFrame
+
+-- Open animation
+TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size=UDim2.new(0,400,0,400)}):Play()
+
+-- Title
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1,0,0,40)
+titleLabel.BackgroundColor3 = Color3.fromRGB(50,50,50)
+titleLabel.Text = "KRNL Executor"
+titleLabel.TextColor3 = Color3.fromRGB(255,255,255)
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextSize = 22
+titleLabel.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0,10)
+titleCorner.Parent = titleLabel
+
+-- Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0,30,0,30)
+closeButton.Position = UDim2.new(1,-35,0,5)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255,255,255)
+closeButton.BackgroundColor3 = Color3.fromRGB(200,50,50)
+closeButton.Font = Enum.Font.SourceSansBold
+closeButton.TextSize = 18
+closeButton.Parent = mainFrame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0,5)
+closeCorner.Parent = closeButton
+
+closeButton.MouseEnter:Connect(function()
+    TweenService:Create(closeButton, TweenInfo.new(0.2), {BackgroundColor3=Color3.fromRGB(255,70,70)}):Play()
+end)
+closeButton.MouseLeave:Connect(function()
+    TweenService:Create(closeButton, TweenInfo.new(0.2), {BackgroundColor3=Color3.fromRGB(200,50,50)}):Play()
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+    TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size=UDim2.new(0,400,0,0)}):Play()
+    wait(0.3)
+    screenGui:Destroy()
+end)
+
+-- Tabs Frame
+local tabsFrame = Instance.new("Frame")
+tabsFrame.Size = UDim2.new(1,0,1,-40)
+tabsFrame.Position = UDim2.new(0,0,0,40)
+tabsFrame.BackgroundTransparency = 1
+tabsFrame.Parent = mainFrame
+
+-- Tab Buttons
+local function createTabButton(name, pos)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0,100,0,30)
+    btn.Position = UDim2.new(0,pos,0,5)
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.SourceSans
+    btn.TextSize = 18
+    btn.Parent = tabsFrame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0,5)
+    corner.Parent = btn
+
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3=Color3.fromRGB(100,100,100)}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3=Color3.fromRGB(70,70,70)}):Play()
+    end)
+
+    return btn
+end
+
+local tab1Button = createTabButton("Main",10)
+local tab2Button = createTabButton("Scripts",120)
+local tab3Button = createTabButton("Settings",230)
+
+-- Tab Pages
+local tabPages = {}
+local function createTabPage()
+    local page = Instance.new("Frame")
+    page.Size = UDim2.new(1,0,1,-50)
+    page.Position = UDim2.new(0,0,0,40)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Parent = mainFrame
+    return page
+end
+
+tabPages.Main = createTabPage()
+tabPages.Scripts = createTabPage()
+tabPages.Settings = createTabPage()
+
+-- Smooth switch tabs
+local function switchTab(name)
+    for tabName, page in pairs(tabPages) do
+        page.Visible = (tabName == name)
+    end
+end
+
+tab1Button.MouseButton1Click:Connect(function() switchTab("Main") end)
+tab2Button.MouseButton1Click:Connect(function() switchTab("Scripts") end)
+tab3Button.MouseButton1Click:Connect(function() switchTab("Settings") end)
+switchTab("Main")
+
+-- Main Tab: Example Button
+local exampleBtn = Instance.new("TextButton")
+exampleBtn.Size = UDim2.new(0,200,0,40)
+exampleBtn.Position = UDim2.new(0.5,-100,0.2,0)
+exampleBtn.Text = "Print Hello"
+exampleBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+exampleBtn.TextColor3 = Color3.fromRGB(255,255,255)
+exampleBtn.Font = Enum.Font.SourceSans
+exampleBtn.TextSize = 18
+exampleBtn.Parent = tabPages.Main
+
+local exampleCorner = Instance.new("UICorner")
+exampleCorner.CornerRadius = UDim.new(0,5)
+exampleCorner.Parent = exampleBtn
+
+exampleBtn.MouseEnter:Connect(function()
+    TweenService:Create(exampleBtn, TweenInfo.new(0.2), {BackgroundColor3=Color3.fromRGB(100,100,100)}):Play()
+end)
+exampleBtn.MouseLeave:Connect(function()
+    TweenService:Create(exampleBtn, TweenInfo.new(0.2), {BackgroundColor3=Color3.fromRGB(70,70,70)}):Play()
+end)
+
+exampleBtn.MouseButton1Click:Connect(function()
+    print("Hello from KRNL GUI!")
+end)
+
+-- Scripts Tab: Loadstring
+local loadBox = Instance.new("TextBox")
+loadBox.Size = UDim2.new(0,300,0,30)
+loadBox.Position = UDim2.new(0.5,-150,0.3,0)
+loadBox.PlaceholderText = "Paste your loadstring here"
+loadBox.Text = ""
+loadBox.ClearTextOnFocus = false
+loadBox.BackgroundColor3 = Color3.fromRGB(50,50,50)
+loadBox.TextColor3 = Color3.fromRGB(255,255,255)
+loadBox.Font = Enum.Font.SourceSans
+loadBox.TextSize = 18
+loadBox.Parent = tabPages.Scripts
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0,5)
+boxCorner.Parent = loadBox
+
+local execButton = Instance.new("TextButton")
+execButton.Size = UDim2.new(0,150,0,30)
+execButton.Position = UDim2.new(0.5,-75,0.5,0)
+execButton.Text = "Execute"
+execButton.BackgroundColor3 = Color3.fromRGB(70,70,70)
+execButton.TextColor3 = Color3.fromRGB(255,255,255)
+execButton.Font = Enum.Font.SourceSans
+execButton.TextSize = 18
+execButton.Parent = tabPages.Scripts
+
+local execCorner = Instance.new("UICorner")
+execCorner.CornerRadius = UDim.new(0,5)
+execCorner.Parent = execButton
+
+execButton.MouseButton1Click:Connect(function()
+    local code = loadBox.Text
+    local success, err = pcall(function()
+        loadstring(code)()
+    end)
+    if not success then
+        warn("Error: "..err)
+    end
+end)
+
+-- Settings Tab: Switches & Sliders
+local function createSwitch(name,posY)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0,200,0,40)
+    frame.Position = UDim2.new(0.5,-100,0,posY)
+    frame.BackgroundTransparency = 1
+    frame.Parent = tabPages.Settings
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0,140,1,0)
+    label.Position = UDim2.new(0,0,0,0)
+    label.Text = name
+    label.TextColor3 = Color3.fromRGB(255,255,255)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.SourceSans
+    label.TextSize = 18
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0,50,1,0)
+    button.Position = UDim2.new(1,-50,0,0)
+    button.Text = "OFF"
+    button.BackgroundColor3 = Color3.fromRGB(150,0,0)
+    button.TextColor3 = Color3.fromRGB(255,255,255)
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 16
+    button.Parent = frame
+
+    local state = false
+    button.MouseButton1Click:Connect(function()
+        state = not state
+        if state then
+            button.Text = "ON"
+            TweenService:Create(button,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(0,150,0)}):Play()
+        else
+            button.Text = "OFF"
+            TweenService:Create(button,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(150,0,0)}):Play()
+        end
+    end)
+end
+
+local function createSlider(name,posY,min,max,default,callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0,200,0,30)
+    frame.Position = UDim2.new(0.5,-100,0,posY)
+    frame.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    frame.Parent = tabPages.Settings
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1,0,0.5,0)
+    label.Position = UDim2.new(0,0,0,0)
+    label.Text = name..": "..tostring(default)
+    label.TextColor3 = Color3.fromRGB(255,255,255)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.SourceSans
+    label.TextSize = 16
+    label.Parent = frame
+
+    local slider = Instance.new("Frame")
+    slider.Size = UDim2.new((default-min)/(max-min),0,0.5,0)
+    slider.Position = UDim2.new(0,0,0.5,0)
+    slider.BackgroundColor3 = Color3.fromRGB(100,100,255)
+    slider.Parent = frame
+
+    local dragging = false
+    slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+    slider.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    frame.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - frame.AbsolutePosition.X)/frame.AbsoluteSize.X,0,1)
+            slider.Size = UDim2.new(pos,0,0.5,0)
+            local value = math.floor(pos*(max-min)+min)
+            label.Text = name..": "..tostring(value)
+            callback(value)
+        end
+    end)
+end
+
+-- Create Switches
+createSwitch("GodMode",50)
+createSwitch("Fly",100)
+
+-- Create Sliders
+createSlider("JumpPower",150,16,200,50,function(value)
+    player.Character.Humanoid.JumpPower = value
+end)
+createSlider("Speed",200,16,500,16,function(value)
+    player.Character.Humanoid.WalkSpeed = value
+end)
